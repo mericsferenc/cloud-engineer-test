@@ -5,6 +5,8 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    networks:
+      - webapp
     ports:
       - "3000:3000"
     environment:
@@ -14,6 +16,9 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    networks:
+      - webapp
+      - database
     ports:
       - "8080:8080"
     depends_on:
@@ -30,3 +35,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=mydatabase
+
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge
