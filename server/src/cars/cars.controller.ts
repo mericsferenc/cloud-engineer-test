@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CarDto } from './car.dto';
+import { Car } from './car.entity';
 import { CarsService } from './cars.service';
 
 @Controller('cars')
@@ -21,12 +22,22 @@ export class CarsController {
 
   @Post()
   create(@Body() carDto: CarDto) {
-    return this.carsService.create(carDto);
+    const car = new Car();
+    car.licensePlate = carDto.licensePlate;
+    car.ownerName = carDto.ownerName;
+    car.horsePower = carDto.horsePower;
+
+    return this.carsService.create(car);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() carDto: CarDto) {
-    return this.carsService.update(+id, carDto);
+    const car = new Car();
+    car.licensePlate = carDto.licensePlate;
+    car.ownerName = carDto.ownerName;
+    car.horsePower = carDto.horsePower;
+
+    return this.carsService.update(+id, car);
   }
 
   @Delete(':id')

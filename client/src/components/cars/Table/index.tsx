@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Input, Modal, Popconfirm, Space, Table, Typography } from 'antd';
 import { Item } from "./types";
 import EditableCell from "./EditableCell";
 import { Car } from "../../../types";
+import { createCar, getAllCars, validateKey } from "../../../api";
 
 const originData: Item[] = [];
 for (let i = 0; i < 10; i++) {
@@ -21,6 +22,18 @@ const CarsTable = () => {
   const [editingKey, setEditingKey] = useState('');
   const [newCar, setNewCar] = useState<Car>({ licensePlate: '', ownerName: '', horsePower: 0 })
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cars, setCars] = useState<Car | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [validated, setValidated] = useState<boolean>(localStorage.getItem('validated') === 'true')
+
+    const validate = (e: any) => {
+        setLoading(true)
+        validateKey(e.secretKey).then(res => {
+            setLoading(false)
+            setValidated(res.data)
+        })
+    }
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -29,6 +42,7 @@ const CarsTable = () => {
     const handleOk = () => {
         console.log(newCar)
         setIsModalOpen(false);
+        createCar(newCar).then(res => console.log(res))
     };
     
     const handleCancel = () => {
@@ -52,7 +66,6 @@ const CarsTable = () => {
     setEditingKey('');
   };
 
-  const userValidated = localStorage.getItem('validated') === 'true';
 
   const save = async (key: React.Key) => {
     try {
@@ -114,10 +127,10 @@ const CarsTable = () => {
           </span>
         ) : (
           <Space>
-            <Button type="primary" disabled={!userValidated || editingKey !== ''} onClick={() => edit(record)}>
+            <Button type="primary" disabled={!validated || editingKey !== ''} onClick={() => edit(record)}>
               Edit
             </Button>
-            <Button danger disabled={!userValidated || editingKey !== ''} onClick={() => remove(record)}>
+            <Button danger disabled={!validated || editingKey !== ''} onClick={() => remove(record)}>
               Delete
             </Button>
           </Space>
@@ -142,10 +155,24 @@ const CarsTable = () => {
     };
   });
 
+  useEffect(() => {
+    getAllCars().then(res => setData(res.data))
+  }, [])
+
   return (
     <Space>
       <Col>
-        <Button disabled={!userValidated} type="primary" onClick={showModal} style={{ marginBottom: 10, marginTop: 30 }} >
+
+        <Form onFinish={validate}>
+              <Form.Item name="secretKey">
+                  <Input.Password style={{ width: "25rem" }} placeholder='Enter the secret key to modify or delete cars...' />
+              </Form.Item>
+              <Button loading={loading} htmlType="submit">Validate</Button>
+        </Form>
+
+
+
+        <Button disabled={!validated} type="primary" onClick={showModal} style={{ marginBottom: 10, marginTop: 30 }} >
             Create a car
         </Button>
         <Modal 
@@ -160,6 +187,7 @@ const CarsTable = () => {
             Owner's name: <Input onChange={(e) => setNewCar({...newCar, ownerName: e.target.value } )} />
             Horsepower: <Input onChange={(e: any) => setNewCar({...newCar, horsePower: e.target.value} )} type="number" />
         </Modal>
+
         <Form form={form} component={false}>
           <Table
             size="middle"
