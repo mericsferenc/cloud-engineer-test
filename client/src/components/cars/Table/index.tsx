@@ -1,53 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Modal, Popconfirm, Space, Table, Typography } from 'antd';
+import { Button, Col, Form, Input, message, Modal, Popconfirm, Space, Table, Typography } from 'antd';
 import { Item } from "./types";
 import EditableCell from "./EditableCell";
 import { Car } from "../../../types";
 import { createCar, getAllCars, validateKey } from "../../../api";
 
-const originData: Item[] = [];
-for (let i = 0; i < 10; i++) {
-  originData.push({
-    key: i.toString(),
-    licensePlate: `licence ${i}`,
-    ownerName: `name ${i}`,
-    horsePower: 32,
-  });
-}
-
 const CarsTable = () => {
 
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+  const [data, setData] = useState<Item[]>([]);
   const [editingKey, setEditingKey] = useState('');
   const [newCar, setNewCar] = useState<Car>({ licensePlate: '', ownerName: '', horsePower: 0 })
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [cars, setCars] = useState<Car | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [validated, setValidated] = useState<boolean>(localStorage.getItem('validated') === 'true')
+  const [messageApi, contextHolder] = message.useMessage();
 
-    const validate = (e: any) => {
-        setLoading(true)
-        validateKey(e.secretKey).then(res => {
-            setLoading(false)
-            setValidated(res.data)
-        })
-    }
+  const validate = (e: any) => {
+      setLoading(true)
+      validateKey(e.secretKey).then(res => {
+          setLoading(false)
+          setValidated(res.data)
+          if (localStorage.getItem('validated') === 'true') {
+            success()
+          } else {
+            error()
+          }
+      })
+  }
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
+  const showModal = () => {
+      setIsModalOpen(true);
+  };
+  
+  const handleOk = () => {
+      console.log(newCar)
+      setIsModalOpen(false);
+      createCar(newCar).then(res => console.log(res))
+  };
     
-    const handleOk = () => {
-        console.log(newCar)
-        setIsModalOpen(false);
-        createCar(newCar).then(res => console.log(res))
-    };
-    
-    const handleCancel = () => {
-        setIsModalOpen(false);
-};
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Secret key is correct!',
+    });
+  };
+
+  const error = () => {
+    messageApi.open({
+      type: 'error',
+      content: 'Incorrect secret key!',
+    });
+  };
 
   const isEditing = (record: Item) => record.key === editingKey;
 
@@ -156,11 +165,19 @@ const CarsTable = () => {
   });
 
   useEffect(() => {
-    getAllCars().then(res => setData(res.data))
+    getAllCars().then(res => {
+      console.log("RESPONSE", res.data)
+
+      const newObj = { ...res.data };
+      newObj.key = newObj.id;
+      delete newObj.id;
+      console.log("newObj", newObj);
+    })
   }, [])
 
   return (
     <Space>
+      {contextHolder}
       <Col>
 
         <Form onFinish={validate}>

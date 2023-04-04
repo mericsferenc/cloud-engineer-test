@@ -3,9 +3,6 @@ import { Car } from '../types';
 
 const HOST = "http://localhost:8080/api"
 
-// TODO: API request functions
-
-
 export const getAllCars = async () => {
   try {
     const res = await axios({
@@ -33,9 +30,32 @@ export const createCar = async (car: Car) => {
   }
 };
 
-export const updateCar = () => {};
+export const updateCar = async (id: number, car: Car) => {
+  try {
+    const res = await axios({
+      method: 'PATCH',
+      url: `${HOST}/cars/${id}`,
+      data: car
+    });
 
-export const removeCar = () => {};
+    return res;
+  } catch (err: any) {
+    throw new Error(err.response?.data.message);
+  }
+};
+
+export const removeCar = async (id: number) => {
+  try {
+    const res = await axios({
+      method: 'DELETE',
+      url: `${HOST}/cars/${id}`,
+    });
+
+    return res;
+  } catch (err: any) {
+    throw new Error(err.response?.data.message);
+  }
+};
 
 export const validateKey = async (secretKey: string) => {
   try {
