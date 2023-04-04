@@ -4,6 +4,7 @@ import { Item } from "./types";
 import EditableCell from "./EditableCell";
 import { Car } from "../../../types";
 import { createCar, getAllCars, validateKey } from "../../../api";
+import { removeCar, updateCar } from '../../../api/index';
 
 const CarsTable = () => {
 
@@ -37,7 +38,9 @@ const CarsTable = () => {
   const handleOk = () => {
       console.log(newCar)
       setIsModalOpen(false);
-      createCar(newCar).then(res => console.log(res))
+      createCar(newCar).then(() => { 
+        getCars();
+      })
   };
     
   const handleCancel = () => {
@@ -66,9 +69,7 @@ const CarsTable = () => {
   };
 
   const remove = (record: Partial<Item> & { key: React.Key }) => {
-    // TODO:
-    // form.setFieldsValue({ licensePlate: '', ownerName: '', address: '', ...record });
-    // setEditingKey(record.key);
+    removeCar(+record.key).then(() => getCars());
   };
 
   const cancel = () => {
@@ -84,6 +85,7 @@ const CarsTable = () => {
       const index = newData.findIndex((item) => key === item.key);
       if (index > -1) {
         const item = newData[index];
+        updateCar(+key, { licensePlate: row.licensePlate, ownerName: row.ownerName, horsePower: row.horsePower })
         newData.splice(index, 1, {
           ...item,
           ...row,
@@ -164,15 +166,16 @@ const CarsTable = () => {
     };
   });
 
-  useEffect(() => {
+  const getCars = () => {
     getAllCars().then(res => {
-      console.log("RESPONSE", res.data)
-
-      const newObj = { ...res.data };
-      newObj.key = newObj.id;
-      delete newObj.id;
-      console.log("newObj", newObj);
+      let newData: Item[] = [];
+      res.data.map((item: any) => newData.push({ key: item.id.toString(), licensePlate: item.licensePlate, ownerName: item.ownerName, horsePower: item.horsePower }))
+      setData(newData)
     })
+  }
+
+  useEffect(() => {
+    getCars();
   }, [])
 
   return (
@@ -207,6 +210,7 @@ const CarsTable = () => {
 
         <Form form={form} component={false}>
           <Table
+            locale={{ emptyText: 'No cars yet.' }}
             size="middle"
             components={{
               body: {
