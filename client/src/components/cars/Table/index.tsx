@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Button, Form, Popconfirm, Space, Table, Typography } from 'antd';
+import { Button, Col, Form, Input, Modal, Popconfirm, Space, Table, Typography } from 'antd';
 import { Item } from "./types";
 import EditableCell from "./EditableCell";
+import { Car } from "../../../types";
 
 const originData: Item[] = [];
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 10; i++) {
   originData.push({
     key: i.toString(),
     licensePlate: `licence ${i}`,
@@ -18,6 +19,21 @@ const CarsTable = () => {
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState('');
+  const [newCar, setNewCar] = useState<Car>({ licensePlate: '', ownerName: '', horsePower: 0 })
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    
+    const handleOk = () => {
+        console.log(newCar)
+        setIsModalOpen(false);
+    };
+    
+    const handleCancel = () => {
+        setIsModalOpen(false);
+};
 
   const isEditing = (record: Item) => record.key === editingKey;
 
@@ -35,6 +51,8 @@ const CarsTable = () => {
   const cancel = () => {
     setEditingKey('');
   };
+
+  const userValidated = localStorage.getItem('validated') === 'true';
 
   const save = async (key: React.Key) => {
     try {
@@ -96,10 +114,10 @@ const CarsTable = () => {
           </span>
         ) : (
           <Space>
-            <Button type="primary" disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <Button type="primary" disabled={!userValidated || editingKey !== ''} onClick={() => edit(record)}>
               Edit
             </Button>
-            <Button danger disabled={editingKey !== ''} onClick={() => remove(record)}>
+            <Button danger disabled={!userValidated || editingKey !== ''} onClick={() => remove(record)}>
               Delete
             </Button>
           </Space>
@@ -126,6 +144,22 @@ const CarsTable = () => {
 
   return (
     <Space>
+      <Col>
+        <Button disabled={!userValidated} type="primary" onClick={showModal} style={{ marginBottom: 10, marginTop: 30 }} >
+            Create a car
+        </Button>
+        <Modal 
+          title="Car details" 
+          open={isModalOpen} 
+          okButtonProps={{ disabled: newCar.horsePower === 0 || newCar.horsePower.toString() === ""  || newCar.licensePlate === '' || newCar.ownerName === '' }} 
+          okText="Create" 
+          onOk={handleOk} 
+          onCancel={handleCancel}
+        >
+            Licence plate number:<Input onChange={(e) => { setNewCar({...newCar, licensePlate: e.target.value } )}} />
+            Owner's name: <Input onChange={(e) => setNewCar({...newCar, ownerName: e.target.value } )} />
+            Horsepower: <Input onChange={(e: any) => setNewCar({...newCar, horsePower: e.target.value} )} type="number" />
+        </Modal>
         <Form form={form} component={false}>
           <Table
             size="middle"
@@ -142,7 +176,8 @@ const CarsTable = () => {
               onChange: cancel,
             }}
           />
-      </Form>
+        </Form>
+      </Col>
     </Space>
   );
 }

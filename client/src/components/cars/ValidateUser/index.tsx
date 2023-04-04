@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Form, Input } from 'antd'
 import { validateKey } from '../../../api/index';
 
 const ValidateUser = () => {
 
+    const [loading, setLoading] = useState(false);
+
     const validate = (e: any) => {
-        console.log(e.secretKey)
-        validateKey(e.secretKey)
+        setLoading(true)
+        validateKey(e.secretKey).then((res: any) => {
+            setLoading(false)
+        })
     }
 
     return (
@@ -14,7 +18,7 @@ const ValidateUser = () => {
             <Form.Item name="secretKey">
                 <Input.Password style={{ width: "25rem" }} placeholder='Enter the secret key to modify or delete cars...' />
             </Form.Item>
-            <Button loading={false} htmlType="submit">Validate</Button>
+            <Button loading={loading} htmlType="submit">Validate</Button>
         </Form>
     )
 }

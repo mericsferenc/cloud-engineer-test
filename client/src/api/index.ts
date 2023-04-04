@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const HOST = "http://localhost:8080/api"
+
 // TODO: API request functions
 
 export const getAllCars = () => {};
@@ -10,16 +12,15 @@ export const updateCar = () => {};
 
 export const removeCar = () => {};
 
-export const validateKey = async (secretKey: any) => {
+export const validateKey = async (secretKey: string) => {
     try {
       const res = await axios({
         method: 'POST',
-        url: '/api/auth/validate',
-        data: secretKey
+        url: `${HOST}/auth/validate`,
+        data: { secretKey }
       });
-  
-    //   utils.setAxiosAuthToken(res.data.token);
-    //   utils.setLocalStorageToken(res.data.token);
+
+      localStorage.setItem('validated', res.data)
   
       return res;
     } catch (err: any) {
