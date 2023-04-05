@@ -36,7 +36,6 @@ const CarsTable = () => {
   };
   
   const handleOk = () => {
-      console.log(newCar)
       setIsModalOpen(false);
       createCar(newCar).then(() => { 
         getCars();
@@ -189,8 +188,6 @@ const CarsTable = () => {
               </Form.Item>
               <Button loading={loading} htmlType="submit">Validate</Button>
         </Form>
-
-
 
         <Button disabled={!validated} type="primary" onClick={showModal} style={{ marginBottom: 10, marginTop: 30 }} >
             Create a car
