@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Input, message, Modal, Popconfirm, Space, Table, Typography } from 'antd';
-import { Item } from "./types";
-import EditableCell from "./EditableCell";
-import { Car } from "../../../types";
-import { createCar, getAllCars, validateKey } from "../../../api";
-import { removeCar, updateCar } from '../../../api/index';
+import { Item } from "./Table/types";
+import EditableCell from "./Table/EditableCell";
+import { Car } from "../types";
+import { createCar, getAllCars, validateKey } from "../api";
+import { removeCar, updateCar } from '../api/index';
+import { error, success } from "./notifications";
 
-const CarsTable = () => {
+const Cars = () => {
 
   const [form] = Form.useForm();
   const [data, setData] = useState<Item[]>([]);
@@ -23,42 +24,18 @@ const CarsTable = () => {
       validateKey(e.secretKey).then(res => {
           setLoading(false)
           setValidated(res.data)
-          if (localStorage.getItem('validated') === 'true') {
-            success()
-          } else {
-            error()
-          }
+          if (localStorage.getItem('validated') === 'true') success(messageApi); else error(messageApi);
       })
   }
 
-  const showModal = () => {
-      setIsModalOpen(true);
-  };
+  const showModal = () => setIsModalOpen(true);
   
   const handleOk = () => {
-      setIsModalOpen(false);
-      createCar(newCar).then(() => { 
-        getCars();
-      })
+    setIsModalOpen(false);
+    createCar(newCar).then(() => getCars())
   };
     
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const success = () => {
-    messageApi.open({
-      type: 'success',
-      content: 'Secret key is correct!',
-    });
-  };
-
-  const error = () => {
-    messageApi.open({
-      type: 'error',
-      content: 'Incorrect secret key!',
-    });
-  };
+  const handleCancel = () => setIsModalOpen(false)
 
   const isEditing = (record: Item) => record.key === editingKey;
 
@@ -71,10 +48,7 @@ const CarsTable = () => {
     removeCar(+record.key).then(() => getCars());
   };
 
-  const cancel = () => {
-    setEditingKey('');
-  };
-
+  const cancel = () => setEditingKey('')
 
   const save = async (key: React.Key) => {
     try {
@@ -132,7 +106,7 @@ const CarsTable = () => {
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
+              Cancel
             </Popconfirm>
           </span>
         ) : (
@@ -223,9 +197,10 @@ const CarsTable = () => {
             }}
           />
         </Form>
+        
       </Col>
     </Space>
   );
 }
 
-export default CarsTable
+export default Cars
