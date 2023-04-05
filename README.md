@@ -15,11 +15,19 @@ To start the application in a Docker environment (preferred):
 For local development, make sure that you have Node.js and NPM package manager installed.
 Create a Postgres database before running the app and make a database called 'mydatabase'. The user and password should be 'postgres'.
 After that you can simply type the following commands to run the client and the server:
-- cd client && npm start
-- cd server && npm start 
+- cd client => npm install => npm start
+- cd server => npm install => npm start 
+
+To run test:
+- you can simply do an "npm run test" command in the server folder
+![image](https://user-images.githubusercontent.com/78168280/229989629-3878dc42-2f23-4546-a831-0fec4c84b6d8.png)
 
 
 # Presentation video
 
 [Screen Recording - 5 April 2023](https://user-images.githubusercontent.com/78168280/229947485-23caba3c-5e5c-42b2-84ea-a9e72976d485.gif)
+
+# Contact
+
+If you have any questions with the application or the local development setup please feel free to contact me: mericsferenc@gmail.com
 
