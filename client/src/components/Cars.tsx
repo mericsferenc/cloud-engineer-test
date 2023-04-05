@@ -106,7 +106,7 @@ const Cars = () => {
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              Cancel
+              <a>Cancel</a>
             </Popconfirm>
           </span>
         ) : (
@@ -197,7 +197,7 @@ const Cars = () => {
             }}
           />
         </Form>
-        
+
       </Col>
     </Space>
   );
