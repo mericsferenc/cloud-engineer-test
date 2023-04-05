@@ -20,7 +20,7 @@ After that you can simply type the following commands to run the client and the 
 
 To run test:
 - you can simply do an "npm run test" command in the server folder
-![image](https://user-images.githubusercontent.com/78168280/229990319-0bfb89e3-2f57-44f4-95e8-86e3636846dd.png)
+![image](https://user-images.githubusercontent.com/78168280/229990807-6b7ca141-b7f0-4388-b314-cfe55c5e97e8.png)
 
 
 # Presentation video
