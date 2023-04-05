@@ -8,7 +8,7 @@ The secret key will be stored in the browser's memory (localStorage) so we don't
 # Installation guide
 
 To start the application in a Docker environment (preferred): 
-- make sure that a Docker environment (e.g. Docker Desktop) is installed
+- make sure that a Docker environment (e.g. Docker Desktop) is installed and running
 - you can install the app in the root folder with a simple "docker compose up --build" command
 - after the build, three containers must be running: client (React), server (NestJS), and database (PostgeSQL)
 
